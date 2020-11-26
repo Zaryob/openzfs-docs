@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>zfs-redact.8 &mdash; OpenZFS  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme_overrides.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/mandoc.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="zfs-release.8" href="zfs-release.8.html" />
+    <link rel="prev" title="zfs-recv.8" href="zfs-recv.8.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #29667e" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo_main.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Getting Started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Project and Community/index.html">Project and Community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Developer Resources/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Performance and Tuning/index.html">Performance and Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Basic Concepts/index.html">Basic Concepts</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Man Pages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../1/index.html">User Commands (1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../5/index.html">File Formats and Conventions (5)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">System Administration Commands (8)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="fsck.zfs.8.html">fsck.zfs.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mount.zfs.8.html">mount.zfs.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vdev_id.8.html">vdev_id.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zdb.8.html">zdb.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-allow.8.html">zfs-allow.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-bookmark.8.html">zfs-bookmark.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-change-key.8.html">zfs-change-key.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-clone.8.html">zfs-clone.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-create.8.html">zfs-create.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-destroy.8.html">zfs-destroy.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-diff.8.html">zfs-diff.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-get.8.html">zfs-get.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-groupspace.8.html">zfs-groupspace.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-hold.8.html">zfs-hold.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-inherit.8.html">zfs-inherit.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-jail.8.html">zfs-jail.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-list.8.html">zfs-list.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-load-key.8.html">zfs-load-key.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-mount.8.html">zfs-mount.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-program.8.html">zfs-program.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-project.8.html">zfs-project.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-projectspace.8.html">zfs-projectspace.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-promote.8.html">zfs-promote.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-receive.8.html">zfs-receive.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-recv.8.html">zfs-recv.8</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">zfs-redact.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-release.8.html">zfs-release.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-rename.8.html">zfs-rename.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-rollback.8.html">zfs-rollback.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-send.8.html">zfs-send.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-set.8.html">zfs-set.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-share.8.html">zfs-share.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-snapshot.8.html">zfs-snapshot.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-unallow.8.html">zfs-unallow.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-unjail.8.html">zfs-unjail.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-unload-key.8.html">zfs-unload-key.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-unmount.8.html">zfs-unmount.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-upgrade.8.html">zfs-upgrade.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-userspace.8.html">zfs-userspace.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs-wait.8.html">zfs-wait.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs.8.html">zfs.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfs_ids_to_path.8.html">zfs_ids_to_path.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfsconcepts.8.html">zfsconcepts.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zfsprops.8.html">zfsprops.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zgenhostid.8.html">zgenhostid.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zinject.8.html">zinject.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-add.8.html">zpool-add.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-attach.8.html">zpool-attach.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-checkpoint.8.html">zpool-checkpoint.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-clear.8.html">zpool-clear.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-create.8.html">zpool-create.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-destroy.8.html">zpool-destroy.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-detach.8.html">zpool-detach.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-events.8.html">zpool-events.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-export.8.html">zpool-export.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-get.8.html">zpool-get.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-history.8.html">zpool-history.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-import.8.html">zpool-import.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-initialize.8.html">zpool-initialize.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-iostat.8.html">zpool-iostat.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-labelclear.8.html">zpool-labelclear.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-list.8.html">zpool-list.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-offline.8.html">zpool-offline.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-online.8.html">zpool-online.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-reguid.8.html">zpool-reguid.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-remove.8.html">zpool-remove.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-reopen.8.html">zpool-reopen.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-replace.8.html">zpool-replace.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-resilver.8.html">zpool-resilver.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-scrub.8.html">zpool-scrub.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-set.8.html">zpool-set.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-split.8.html">zpool-split.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-status.8.html">zpool-status.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-sync.8.html">zpool-sync.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-trim.8.html">zpool-trim.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-upgrade.8.html">zpool-upgrade.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool-wait.8.html">zpool-wait.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool.8.html">zpool.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpool_influxdb.8.html">zpool_influxdb.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpoolconcepts.8.html">zpoolconcepts.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zpoolprops.8.html">zpoolprops.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zstream.8.html">zstream.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zstreamdump.8.html">zstreamdump.8</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../msg/index.html">ZFS Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../License.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenZFS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Man Pages</a> &raquo;</li>
+        
+          <li><a href="index.html">System Administration Commands (8)</a> &raquo;</li>
+        
+      <li>zfs-redact.8</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/openzfs/openzfs-docs/blob/master/docs/man/8/zfs-redact.8.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="zfs-redact-8">
+<h1>zfs-redact.8<a class="headerlink" href="#zfs-redact-8" title="Permalink to this headline">¶</a></h1>
+<div class="man_container"><table class="head">
+  <tr>
+    <td class="head-ltitle">ZFS-SEND(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">ZFS-SEND(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<h1 class="Sh" title="Sh" id="NAME"><a class="selflink" href="#NAME">NAME</a></h1>
+<b class="Nm" title="Nm">zfs-send</b> &#x2014;
+  <span class="Nd" title="Nd">Generate a send stream, which may be of a
+  filesystem, and may be incremental from a bookmark.</span>
+<h1 class="Sh" title="Sh" id="SYNOPSIS"><a class="selflink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><b class="Nm" title="Nm">zfs</b></td>
+    <td><b class="Cm" title="Cm">send</b>
+      [<span class="Op"><b class="Fl" title="Fl">-DLPRbcehnpvw</b></span>]
+      [<span class="Op">[<span class="Op"><b class="Fl" title="Fl">-I</b>|<b class="Fl" title="Fl">-i</b></span>]
+      <var class="Ar" title="Ar">snapshot</var></span>]
+      <var class="Ar" title="Ar">snapshot</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><b class="Nm" title="Nm">zfs</b></td>
+    <td><b class="Cm" title="Cm">send</b>
+      [<span class="Op"><b class="Fl" title="Fl">-DLPRcenpvw</b></span>]
+      [<span class="Op"><b class="Fl" title="Fl">-i</b>
+      <var class="Ar" title="Ar">snapshot</var>|<var class="Ar" title="Ar">bookmark</var></span>]
+      <var class="Ar" title="Ar">filesystem</var>|<var class="Ar" title="Ar">volume</var>|<var class="Ar" title="Ar">snapshot</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><b class="Nm" title="Nm">zfs</b></td>
+    <td><b class="Cm" title="Cm">send</b> <b class="Fl" title="Fl">--redact</b>
+      <var class="Ar" title="Ar">redaction_bookmark</var>
+      [<span class="Op"><b class="Fl" title="Fl">-DLPcenpv</b></span>]
+    <div>&#x00A0;</div>
+    [<span class="Op"><b class="Fl" title="Fl">-i</b>
+      <var class="Ar" title="Ar">snapshot</var>|<var class="Ar" title="Ar">bookmark</var></span>]
+      <var class="Ar" title="Ar">snapshot</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><b class="Nm" title="Nm">zfs</b></td>
+    <td><b class="Cm" title="Cm">send</b>
+      [<span class="Op"><b class="Fl" title="Fl">-Penv</b></span>]
+      <b class="Fl" title="Fl">-t</b>
+      <var class="Ar" title="Ar">receive_resume_token</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><b class="Nm" title="Nm">zfs</b></td>
+    <td><b class="Cm" title="Cm">send</b>
+      [<span class="Op"><b class="Fl" title="Fl">-Pnv</b></span>]
+      <b class="Fl" title="Fl">-S</b>
+      <var class="Ar" title="Ar">filesystem</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><b class="Nm" title="Nm">zfs</b></td>
+    <td><b class="Cm" title="Cm">redact</b> <var class="Ar" title="Ar">snapshot
+      redaction_bookmark</var>
+      <var class="Ar" title="Ar">redaction_snapshot</var>...</td>
+  </tr>
+</table>
+<h1 class="Sh" title="Sh" id="DESCRIPTION"><a class="selflink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<dl class="Bl-tag" style="margin-left: 3.00ex;">
+  <dt class="It-tag" style="margin-left: -3.00ex;"><b class="Nm" title="Nm">zfs</b>
+    <b class="Cm" title="Cm">send</b>
+    [<span class="Op"><b class="Fl" title="Fl">-DLPRbcehnpvw</b></span>]
+    [<span class="Op">[<span class="Op"><b class="Fl" title="Fl">-I</b>|<b class="Fl" title="Fl">-i</b></span>]
+    <var class="Ar" title="Ar">snapshot</var></span>]
+    <var class="Ar" title="Ar">snapshot</var></dt>
+  <dd class="It-tag">Creates a stream representation of the second
+      <var class="Ar" title="Ar">snapshot</var>, which is written to standard
+      output. The output can be redirected to a file or to a different system
+      (for example, using <a class="Xr" title="Xr">ssh(1)</a>). By default, a
+      full stream is generated.
+    <dl class="Bl-tag" style="margin-left: 5.40ex;">
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#D,"><b class="Fl" title="Fl" id="D,">-D,</b></a>
+        <b class="Fl" title="Fl">--dedup</b></dt>
+      <dd class="It-tag">Deduplicated send is no longer supported. This flag is
+          accepted for backwards compatibility, but a regular, non-deduplicated
+          stream will be generated.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#I"><b class="Fl" title="Fl" id="I">-I</b></a>
+        <var class="Ar" title="Ar">snapshot</var></dt>
+      <dd class="It-tag">Generate a stream package that sends all intermediary
+          snapshots from the first snapshot to the second snapshot. For example,
+          <b class="Fl" title="Fl">-I</b> <i class="Em" title="Em">@a</i>
+          <i class="Em" title="Em">fs@d</i> is similar to
+          <b class="Fl" title="Fl">-i</b> <i class="Em" title="Em">@a</i>
+          <i class="Em" title="Em">fs@b</i>; <b class="Fl" title="Fl">-i</b>
+          <i class="Em" title="Em">@b</i> <i class="Em" title="Em">fs@c</i>;
+          <b class="Fl" title="Fl">-i</b> <i class="Em" title="Em">@c</i>
+          <i class="Em" title="Em">fs@d</i>. The incremental source may be
+          specified as with the <b class="Fl" title="Fl">-i</b> option.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#L,"><b class="Fl" title="Fl" id="L,">-L,</b></a>
+        <b class="Fl" title="Fl">--large-block</b></dt>
+      <dd class="It-tag">Generate a stream which may contain blocks larger than
+          128KB. This flag has no effect if the
+          <b class="Sy" title="Sy">large_blocks</b> pool feature is disabled, or
+          if the <b class="Sy" title="Sy">recordsize</b> property of this
+          filesystem has never been set above 128KB. The receiving system must
+          have the <b class="Sy" title="Sy">large_blocks</b> pool feature
+          enabled as well. See <a href="../5/zpool-features.5.html" class="Xr">zpool-features(5)</a>
+          for details on ZFS feature flags and the
+          <b class="Sy" title="Sy">large_blocks</b> feature.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#P,"><b class="Fl" title="Fl" id="P,">-P,</b></a>
+        <b class="Fl" title="Fl">--parsable</b></dt>
+      <dd class="It-tag">Print machine-parsable verbose information about the
+          stream package generated.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#R,"><b class="Fl" title="Fl" id="R,">-R,</b></a>
+        <b class="Fl" title="Fl">--replicate</b></dt>
+      <dd class="It-tag">Generate a replication stream package, which will
+          replicate the specified file system, and all descendent file systems,
+          up to the named snapshot. When received, all properties, snapshots,
+          descendent file systems, and clones are preserved.
+        <div class="Pp"></div>
+        If the <b class="Fl" title="Fl">-i</b> or
+          <b class="Fl" title="Fl">-I</b> flags are used in conjunction with the
+          <b class="Fl" title="Fl">-R</b> flag, an incremental replication
+          stream is generated. The current values of properties, and current
+          snapshot and file system names are set when the stream is received. If
+          the <b class="Fl" title="Fl">-F</b> flag is specified when this stream
+          is received, snapshots and file systems that do not exist on the
+          sending side are destroyed. If the <b class="Fl" title="Fl">-R</b>
+          flag is used to send encrypted datasets, then
+          <b class="Fl" title="Fl">-w</b> must also be specified.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#e,"><b class="Fl" title="Fl" id="e,">-e,</b></a>
+        <b class="Fl" title="Fl">--embed</b></dt>
+      <dd class="It-tag">Generate a more compact stream by using
+          <b class="Sy" title="Sy">WRITE_EMBEDDED</b> records for blocks which
+          are stored more compactly on disk by the
+          <b class="Sy" title="Sy">embedded_data</b> pool feature. This flag has
+          no effect if the <b class="Sy" title="Sy">embedded_data</b> feature is
+          disabled. The receiving system must have the
+          <b class="Sy" title="Sy">embedded_data</b> feature enabled. If the
+          <b class="Sy" title="Sy">lz4_compress</b> feature is active on the
+          sending system, then the receiving system must have that feature
+          enabled as well. Datasets that are sent with this flag may not be
+          received as an encrypted dataset, since encrypted datasets cannot use
+          the <b class="Sy" title="Sy">embedded_data</b> feature. See
+          <a href="../5/zpool-features.5.html" class="Xr">zpool-features(5)</a> for details on ZFS
+          feature flags and the <b class="Sy" title="Sy">embedded_data</b>
+          feature.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#b,"><b class="Fl" title="Fl" id="b,">-b,</b></a>
+        <b class="Fl" title="Fl">--backup</b></dt>
+      <dd class="It-tag">Sends only received property values whether or not they
+          are overridden by local settings, but only if the dataset has ever
+          been received. Use this option when you want
+          <b class="Nm" title="Nm">zfs</b> <b class="Cm" title="Cm">receive</b>
+          to restore received properties backed up on the sent dataset and to
+          avoid sending local settings that may have nothing to do with the
+          source dataset, but only with how the data is backed up.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#c,"><b class="Fl" title="Fl" id="c,">-c,</b></a>
+        <b class="Fl" title="Fl">--compressed</b></dt>
+      <dd class="It-tag">Generate a more compact stream by using compressed
+          WRITE records for blocks which are compressed on disk and in memory
+          (see the <b class="Sy" title="Sy">compression</b> property for
+          details). If the <b class="Sy" title="Sy">lz4_compress</b> feature is
+          active on the sending system, then the receiving system must have that
+          feature enabled as well. If the
+          <b class="Sy" title="Sy">large_blocks</b> feature is enabled on the
+          sending system but the <b class="Fl" title="Fl">-L</b> option is not
+          supplied in conjunction with <b class="Fl" title="Fl">-c</b>, then the
+          data will be decompressed before sending so it can be split into
+          smaller block sizes.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#w,"><b class="Fl" title="Fl" id="w,">-w,</b></a>
+        <b class="Fl" title="Fl">--raw</b></dt>
+      <dd class="It-tag">For encrypted datasets, send data exactly as it exists
+          on disk. This allows backups to be taken even if encryption keys are
+          not currently loaded. The backup may then be received on an untrusted
+          machine since that machine will not have the encryption keys to read
+          the protected data or alter it without being detected. Upon being
+          received, the dataset will have the same encryption keys as it did on
+          the send side, although the <b class="Sy" title="Sy">keylocation</b>
+          property will be defaulted to <b class="Sy" title="Sy">prompt</b> if
+          not otherwise provided. For unencrypted datasets, this flag will be
+          equivalent to <b class="Fl" title="Fl">-Lec</b>. Note that if you do
+          not use this flag for sending encrypted datasets, data will be sent
+          unencrypted and may be re-encrypted with a different encryption key on
+          the receiving system, which will disable the ability to do a raw send
+          to that system for incrementals.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#h,"><b class="Fl" title="Fl" id="h,">-h,</b></a>
+        <b class="Fl" title="Fl">--holds</b></dt>
+      <dd class="It-tag">Generate a stream package that includes any snapshot
+          holds (created with the <b class="Sy" title="Sy">zfs hold</b>
+          command), and indicating to <b class="Sy" title="Sy">zfs receive</b>
+          that the holds be applied to the dataset on the receiving system.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#i"><b class="Fl" title="Fl" id="i">-i</b></a>
+        <var class="Ar" title="Ar">snapshot</var></dt>
+      <dd class="It-tag">Generate an incremental stream from the first
+          <var class="Ar" title="Ar">snapshot</var> (the incremental source) to
+          the second <var class="Ar" title="Ar">snapshot</var> (the incremental
+          target). The incremental source can be specified as the last component
+          of the snapshot name (the <b class="Sy" title="Sy">@</b> character and
+          following) and it is assumed to be from the same file system as the
+          incremental target.
+        <div class="Pp"></div>
+        If the destination is a clone, the source may be the origin snapshot,
+          which must be fully specified (for example,
+          <i class="Em" title="Em">pool/fs@origin</i>, not just
+          <i class="Em" title="Em">@origin</i>).</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#n,"><b class="Fl" title="Fl" id="n,">-n,</b></a>
+        <b class="Fl" title="Fl">--dryrun</b></dt>
+      <dd class="It-tag">Do a dry-run (&#x201C;No-op&#x201D;) send. Do not
+          generate any actual send data. This is useful in conjunction with the
+          <b class="Fl" title="Fl">-v</b> or <b class="Fl" title="Fl">-P</b>
+          flags to determine what data will be sent. In this case, the verbose
+          output will be written to standard output (contrast with a
+          non-dry-run, where the stream is written to standard output and the
+          verbose output goes to standard error).</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#p,"><b class="Fl" title="Fl" id="p,">-p,</b></a>
+        <b class="Fl" title="Fl">--props</b></dt>
+      <dd class="It-tag">Include the dataset's properties in the stream. This
+          flag is implicit when <b class="Fl" title="Fl">-R</b> is specified.
+          The receiving system must also support this feature. Sends of
+          encrypted datasets must use <b class="Fl" title="Fl">-w</b> when using
+          this flag.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#v,"><b class="Fl" title="Fl" id="v,">-v,</b></a>
+        <b class="Fl" title="Fl">--verbose</b></dt>
+      <dd class="It-tag">Print verbose information about the stream package
+          generated. This information includes a per-second report of how much
+          data has been sent.
+        <div class="Pp"></div>
+        The format of the stream is committed. You will be able to receive your
+          streams on future versions of ZFS.</dd>
+    </dl>
+  </dd>
+  <dt class="It-tag" style="margin-left: -3.00ex;"><b class="Nm" title="Nm">zfs</b>
+    <b class="Cm" title="Cm">send</b>
+    [<span class="Op"><b class="Fl" title="Fl">-DLPRcenpvw</b></span>]
+    [<span class="Op"><b class="Fl" title="Fl">-i</b>
+    <var class="Ar" title="Ar">snapshot</var>|<var class="Ar" title="Ar">bookmark</var></span>]
+    <var class="Ar" title="Ar">filesystem</var>|<var class="Ar" title="Ar">volume</var>|<var class="Ar" title="Ar">snapshot</var></dt>
+  <dd class="It-tag">Generate a send stream, which may be of a filesystem, and
+      may be incremental from a bookmark. If the destination is a filesystem or
+      volume, the pool must be read-only, or the filesystem must not be mounted.
+      When the stream generated from a filesystem or volume is received, the
+      default snapshot name will be &#x201C;--head--&#x201D;.
+    <dl class="Bl-tag" style="margin-left: 5.40ex;">
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#L,"><b class="Fl" title="Fl" id="L,">-L,</b></a>
+        <b class="Fl" title="Fl">--large-block</b></dt>
+      <dd class="It-tag">Generate a stream which may contain blocks larger than
+          128KB. This flag has no effect if the
+          <b class="Sy" title="Sy">large_blocks</b> pool feature is disabled, or
+          if the <b class="Sy" title="Sy">recordsize</b> property of this
+          filesystem has never been set above 128KB. The receiving system must
+          have the <b class="Sy" title="Sy">large_blocks</b> pool feature
+          enabled as well. See <a href="../5/zpool-features.5.html" class="Xr">zpool-features(5)</a>
+          for details on ZFS feature flags and the
+          <b class="Sy" title="Sy">large_blocks</b> feature.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#P,"><b class="Fl" title="Fl" id="P,">-P,</b></a>
+        <b class="Fl" title="Fl">--parsable</b></dt>
+      <dd class="It-tag">Print machine-parsable verbose information about the
+          stream package generated.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#c,"><b class="Fl" title="Fl" id="c,">-c,</b></a>
+        <b class="Fl" title="Fl">--compressed</b></dt>
+      <dd class="It-tag">Generate a more compact stream by using compressed
+          WRITE records for blocks which are compressed on disk and in memory
+          (see the <b class="Sy" title="Sy">compression</b> property for
+          details). If the <b class="Sy" title="Sy">lz4_compress</b> feature is
+          active on the sending system, then the receiving system must have that
+          feature enabled as well. If the
+          <b class="Sy" title="Sy">large_blocks</b> feature is enabled on the
+          sending system but the <b class="Fl" title="Fl">-L</b> option is not
+          supplied in conjunction with <b class="Fl" title="Fl">-c</b>, then the
+          data will be decompressed before sending so it can be split into
+          smaller block sizes.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#w,"><b class="Fl" title="Fl" id="w,">-w,</b></a>
+        <b class="Fl" title="Fl">--raw</b></dt>
+      <dd class="It-tag">For encrypted datasets, send data exactly as it exists
+          on disk. This allows backups to be taken even if encryption keys are
+          not currently loaded. The backup may then be received on an untrusted
+          machine since that machine will not have the encryption keys to read
+          the protected data or alter it without being detected. Upon being
+          received, the dataset will have the same encryption keys as it did on
+          the send side, although the <b class="Sy" title="Sy">keylocation</b>
+          property will be defaulted to <b class="Sy" title="Sy">prompt</b> if
+          not otherwise provided. For unencrypted datasets, this flag will be
+          equivalent to <b class="Fl" title="Fl">-Lec</b>. Note that if you do
+          not use this flag for sending encrypted datasets, data will be sent
+          unencrypted and may be re-encrypted with a different encryption key on
+          the receiving system, which will disable the ability to do a raw send
+          to that system for incrementals.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#e,"><b class="Fl" title="Fl" id="e,">-e,</b></a>
+        <b class="Fl" title="Fl">--embed</b></dt>
+      <dd class="It-tag">Generate a more compact stream by using
+          <b class="Sy" title="Sy">WRITE_EMBEDDED</b> records for blocks which
+          are stored more compactly on disk by the
+          <b class="Sy" title="Sy">embedded_data</b> pool feature. This flag has
+          no effect if the <b class="Sy" title="Sy">embedded_data</b> feature is
+          disabled. The receiving system must have the
+          <b class="Sy" title="Sy">embedded_data</b> feature enabled. If the
+          <b class="Sy" title="Sy">lz4_compress</b> feature is active on the
+          sending system, then the receiving system must have that feature
+          enabled as well. Datasets that are sent with this flag may not be
+          received as an encrypted dataset, since encrypted datasets cannot use
+          the <b class="Sy" title="Sy">embedded_data</b> feature. See
+          <a href="../5/zpool-features.5.html" class="Xr">zpool-features(5)</a> for details on ZFS
+          feature flags and the <b class="Sy" title="Sy">embedded_data</b>
+          feature.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#i"><b class="Fl" title="Fl" id="i">-i</b></a>
+        <var class="Ar" title="Ar">snapshot</var>|<var class="Ar" title="Ar">bookmark</var></dt>
+      <dd class="It-tag">Generate an incremental send stream. The incremental
+          source must be an earlier snapshot in the destination's history. It
+          will commonly be an earlier snapshot in the destination's file system,
+          in which case it can be specified as the last component of the name
+          (the <b class="Sy" title="Sy">#</b> or <b class="Sy" title="Sy">@</b>
+          character and following).
+        <div class="Pp"></div>
+        If the incremental target is a clone, the incremental source can be the
+          origin snapshot, or an earlier snapshot in the origin's filesystem, or
+          the origin's origin, etc.</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#n,"><b class="Fl" title="Fl" id="n,">-n,</b></a>
+        <b class="Fl" title="Fl">--dryrun</b></dt>
+      <dd class="It-tag">Do a dry-run (&#x201C;No-op&#x201D;) send. Do not
+          generate any actual send data. This is useful in conjunction with the
+          <b class="Fl" title="Fl">-v</b> or <b class="Fl" title="Fl">-P</b>
+          flags to determine what data will be sent. In this case, the verbose
+          output will be written to standard output (contrast with a
+          non-dry-run, where the stream is written to standard output and the
+          verbose output goes to standard error).</dd>
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#v,"><b class="Fl" title="Fl" id="v,">-v,</b></a>
+        <b class="Fl" title="Fl">--verbose</b></dt>
+      <dd class="It-tag">Print verbose information about the stream package
+          generated. This information includes a per-second report of how much
+          data has been sent.</dd>
+    </dl>
+  </dd>
+  <dt class="It-tag" style="margin-left: -3.00ex;"><b class="Nm" title="Nm">zfs</b>
+    <b class="Cm" title="Cm">send</b> <b class="Fl" title="Fl">--redact</b>
+    <var class="Ar" title="Ar">redaction_bookmark</var>
+    [<span class="Op"><b class="Fl" title="Fl">-DLPcenpv</b></span>]
+  <div>&#x00A0;</div>
+  [<span class="Op"><b class="Fl" title="Fl">-i</b>
+    <var class="Ar" title="Ar">snapshot</var>|<var class="Ar" title="Ar">bookmark</var></span>]
+    <var class="Ar" title="Ar">snapshot</var></dt>
+  <dd class="It-tag">Generate a redacted send stream. This send stream contains
+      all blocks from the snapshot being sent that aren't included in the
+      redaction list contained in the bookmark specified by the
+      <b class="Fl" title="Fl">--redact</b> (or <b class="Fl" title="Fl">--d</b>
+      ) flag. The resulting send stream is said to be redacted with respect to
+      the snapshots the bookmark specified by the
+      <b class="Fl" title="Fl">--redact</b> <span class="No">flag was created
+      with.</span> The bookmark must have been created by running
+      <b class="Sy" title="Sy">zfs redact</b> on the snapshot being sent.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    This feature can be used to allow clones of a filesystem to be made
+      available on a remote system, in the case where their parent need not (or
+      needs to not) be usable. For example, if a filesystem contains sensitive
+      data, and it has clones where that sensitive data has been secured or
+      replaced with dummy data, redacted sends can be used to replicate the
+      secured data without replicating the original sensitive data, while still
+      sharing all possible blocks. A snapshot that has been redacted with
+      respect to a set of snapshots will contain all blocks referenced by at
+      least one snapshot in the set, but will contain none of the blocks
+      referenced by none of the snapshots in the set. In other words, if all
+      snapshots in the set have modified a given block in the parent, that block
+      will not be sent; but if one or more snapshots have not modified a block
+      in the parent, they will still reference the parent's block, so that block
+      will be sent. Note that only user data will be redacted.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    When the redacted send stream is received, we will generate a redacted
+      snapshot. Due to the nature of redaction, a redacted dataset can only be
+      used in the following ways:
+    <div style="height: 1.00em;">&#x00A0;</div>
+    1. To receive, as a clone, an incremental send from the original snapshot to
+      one of the snapshots it was redacted with respect to. In this case, the
+      stream will produce a valid dataset when received because all blocks that
+      were redacted in the parent are guaranteed to be present in the child's
+      send stream. This use case will produce a normal snapshot, which can be
+      used just like other snapshots.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    2. To receive an incremental send from the original snapshot to something
+      redacted with respect to a subset of the set of snapshots the initial
+      snapshot was redacted with respect to. In this case, each block that was
+      redacted in the original is still redacted (redacting with respect to
+      additional snapshots causes less data to be redacted (because the
+      snapshots define what is permitted, and everything else is redacted)).
+      This use case will produce a new redacted snapshot.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    3. To receive an incremental send from a redaction bookmark of the original
+      snapshot that was created when redacting with respect to a subset of the
+      set of snapshots the initial snapshot was created with respect to anything
+      else. A send stream from such a redaction bookmark will contain all of the
+      blocks necessary to fill in any redacted data, should it be needed,
+      because the sending system is aware of what blocks were originally
+      redacted. This will either produce a normal snapshot or a redacted one,
+      depending on whether the new send stream is redacted.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    4. To receive an incremental send from a redacted version of the initial
+      snapshot that is redacted with respect to a subject of the set of
+      snapshots the initial snapshot was created with respect to. A send stream
+      from a compatible redacted dataset will contain all of the blocks
+      necessary to fill in any redacted data. This will either produce a normal
+      snapshot or a redacted one, depending on whether the new send stream is
+      redacted.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    5. To receive a full send as a clone of the redacted snapshot. Since the
+      stream is a full send, it definitionally contains all the data needed to
+      create a new dataset. This use case will either produce a normal snapshot
+      or a redacted one, depending on whether the full send stream was redacted.
+    <div style="height: 1.00em;">&#x00A0;</div>
+    These restrictions are detected and enforced by <b>zfs receive</b>; a
+      redacted send stream will contain the list of snapshots that the stream is
+      redacted with respect to. These are stored with the redacted snapshot, and
+      are used to detect and correctly handle the cases above. Note that for
+      technical reasons, raw sends and redacted sends cannot be combined at this
+      time.</dd>
+  <dt class="It-tag" style="margin-left: -3.00ex;"><b class="Nm" title="Nm">zfs</b>
+    <b class="Cm" title="Cm">send</b>
+    [<span class="Op"><b class="Fl" title="Fl">-Penv</b></span>]
+    <b class="Fl" title="Fl">-t</b>
+    <var class="Ar" title="Ar">receive_resume_token</var></dt>
+  <dd class="It-tag">Creates a send stream which resumes an interrupted receive.
+      The <var class="Ar" title="Ar">receive_resume_token</var> is the value of
+      this property on the filesystem or volume that was being received into.
+      See the documentation for <b class="Sy" title="Sy">zfs receive -s</b> for
+      more details.</dd>
+  <dt class="It-tag" style="margin-left: -3.00ex;"><b class="Nm" title="Nm">zfs</b>
+    <b class="Cm" title="Cm">send</b>
+    [<span class="Op"><b class="Fl" title="Fl">-Pnv</b></span>]
+    [<span class="Op"><b class="Fl" title="Fl">-i</b>
+    <var class="Ar" title="Ar">snapshot</var>|<var class="Ar" title="Ar">bookmark</var></span>]
+    <b class="Fl" title="Fl">-S</b>
+    <var class="Ar" title="Ar">filesystem</var></dt>
+  <dd class="It-tag">Generate a send stream from a dataset that has been
+      partially received.
+    <dl class="Bl-tag" style="margin-left: 5.40ex;">
+      <dt class="It-tag" style="margin-left: -5.40ex;"><a class="selflink" href="#S,"><b class="Fl" title="Fl" id="S,">-S,</b></a>
+        <b class="Fl" title="Fl">--saved</b></dt>
+      <dd class="It-tag">This flag requires that the specified filesystem
+          previously received a resumable send that did not finish and was
+          interrupted. In such scenarios this flag enables the user to send this
+          partially received state. Using this flag will always use the last
+          fully received snapshot as the incremental source if it exists.</dd>
+    </dl>
+  </dd>
+  <dt class="It-tag" style="margin-left: -3.00ex;"><b class="Nm" title="Nm">zfs</b>
+    <b class="Cm" title="Cm">redact</b> <var class="Ar" title="Ar">snapshot
+    redaction_bookmark</var>
+    <var class="Ar" title="Ar">redaction_snapshot</var>...</dt>
+  <dd class="It-tag">Generate a new redaction bookmark. In addition to the
+      typical bookmark information, a redaction bookmark contains the list of
+      redacted blocks and the list of redaction snapshots specified. The
+      redacted blocks are blocks in the snapshot which are not referenced by any
+      of the redaction snapshots. These blocks are found by iterating over the
+      metadata in each redaction snapshot to determine what has been changed
+      since the target snapshot. Redaction is designed to support redacted zfs
+      sends; see the entry for <b class="Sy" title="Sy">zfs send</b> for more
+      information on the purpose of this operation. If a redact operation fails
+      partway through (due to an error or a system failure), the redaction can
+      be resumed by rerunning the same command.</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Redaction"><a class="selflink" href="#Redaction">Redaction</a></h2>
+ZFS has support for a limited version of data subsetting, in the form of
+  redaction. Using the <b class="Sy" title="Sy">zfs redact</b> command, a
+  <b class="Sy" title="Sy">redaction bookmark</b> can be created that stores a
+  list of blocks containing sensitive information. When provided to
+  <b class="Sy" title="Sy">zfs</b> <b class="Sy" title="Sy">send</b>, this
+  causes a <b class="Sy" title="Sy">redacted send</b> to occur. Redacted sends
+  omit the blocks containing sensitive information, replacing them with REDACT
+  records. When these send streams are received, a
+  <b class="Sy" title="Sy">redacted dataset</b> is created. A redacted dataset
+  cannot be mounted by default, since it is incomplete. It can be used to
+  receive other send streams. In this way datasets can be used for data backup
+  and replication, with all the benefits that zfs send and receive have to
+  offer, while protecting sensitive information from being stored on
+  less-trusted machines or services.
+<div class="Pp"></div>
+For the purposes of redaction, there are two steps to the process. A redact
+  step, and a send/receive step. First, a redaction bookmark is created. This is
+  done by providing the <b class="Sy" title="Sy">zfs redact</b> command with a
+  parent snapshot, a bookmark to be created, and a number of redaction
+  snapshots. These redaction snapshots must be descendants of the parent
+  snapshot, and they should modify data that is considered sensitive in some
+  way. Any blocks of data modified by all of the redaction snapshots will be
+  listed in the redaction bookmark, because it represents the truly sensitive
+  information. When it comes to the send step, the send process will not send
+  the blocks listed in the redaction bookmark, instead replacing them with
+  REDACT records. When received on the target system, this will create a
+  redacted dataset, missing the data that corresponds to the blocks in the
+  redaction bookmark on the sending system. The incremental send streams from
+  the original parent to the redaction snapshots can then also be received on
+  the target system, and this will produce a complete snapshot that can be used
+  normally. Incrementals from one snapshot on the parent filesystem and another
+  can also be done by sending from the redaction bookmark, rather than the
+  snapshots themselves.
+<div class="Pp"></div>
+In order to make the purpose of the feature more clear, an example is provided.
+  Consider a zfs filesystem containing four files. These files represent
+  information for an online shopping service. One file contains a list of
+  usernames and passwords, another contains purchase histories, a third contains
+  click tracking data, and a fourth contains user preferences. The owner of this
+  data wants to make it available for their development teams to test against,
+  and their market research teams to do analysis on. The development teams need
+  information about user preferences and the click tracking data, while the
+  market research teams need information about purchase histories and user
+  preferences. Neither needs access to the usernames and passwords. However,
+  because all of this data is stored in one ZFS filesystem, it must all be sent
+  and received together. In addition, the owner of the data wants to take
+  advantage of features like compression, checksumming, and snapshots, so they
+  do want to continue to use ZFS to store and transmit their data. Redaction can
+  help them do so. First, they would make two clones of a snapshot of the data
+  on the source. In one clone, they create the setup they want their market
+  research team to see; they delete the usernames and passwords file, and
+  overwrite the click tracking data with dummy information. In another, they
+  create the setup they want the development teams to see, by replacing the
+  passwords with fake information and replacing the purchase histories with
+  randomly generated ones. They would then create a redaction bookmark on the
+  parent snapshot, using snapshots on the two clones as redaction snapshots. The
+  parent can then be sent, redacted, to the target server where the research and
+  development teams have access. Finally, incremental sends from the parent
+  snapshot to each of the clones can be send to and received on the target
+  server; these snapshots are identical to the ones on the source, and are ready
+  to be used, while the parent snapshot on the target contains none of the
+  username and password data present on the source, because it was removed by
+  the redacted send operation.
+<h1 class="Sh" title="Sh" id="SEE_ALSO"><a class="selflink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a href="../8/zfs-bookmark.8.html" class="Xr">zfs-bookmark(8)</a>,
+  <a href="../8/zfs-receive.8.html" class="Xr">zfs-receive(8)</a>,
+  <a href="../8/zfs-redact.8.html" class="Xr">zfs-redact(8)</a>,
+  <a href="../8/zfs-snapshot.8.html" class="Xr">zfs-snapshot(8)</a></div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">June 30, 2019</td>
+    <td class="foot-os">Debian</td>
+  </tr>
+</table>
+</div></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="zfs-release.8.html" class="btn btn-neutral float-right" title="zfs-release.8" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="zfs-recv.8.html" class="btn btn-neutral float-left" title="zfs-recv.8" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, OpenZFS
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
