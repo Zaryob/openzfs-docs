@@ -42,7 +42,7 @@ Support
 If you need help, reach out to the community using the :ref:`mailing_lists` or IRC at
 `#zfsonlinux <irc://irc.freenode.net/#zfsonlinux>`__ on `freenode
 <https://freenode.net/>`__. If you have a bug report or feature request
-related to this HOWTO, please `file a new issue and mention @Zaryob`__.
+related to this HOWTO, please file a new issue and mention @Zaryob.
 
 Contributing
 ~~~~~~~~~~~~
@@ -108,8 +108,8 @@ Step 1: Prepare The Install Environment
 
 #. Setup and update the repositories::
 
-   sudo zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Leap_{$release}/  fileSystems # Adds  brassh/filesystems repository named as fileSystem
-   sudo zypper ref   # Refresing all repositories
+     sudo zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Leap_{$release}/  fileSystems 
+     sudo zypper ref   # Refresing all repositories
 
 #. Optional: Install and start the OpenSSH server in the Live CD environment:
 
@@ -516,10 +516,8 @@ Step 4. Install System
 
      zypper --root $root install -t pattern minimal_base
 
-#. Optional:
-
-   For installing Desktop Environment into OpenSUSE, look at the `OpenSUSE wiki 
-     <https://en.opensuse.org/openSUSE:Desktop_FAQ#How_to_choose_a_desktop_environment.3F>`__
+For installing Desktop Environment into OpenSUSE, look at the `OpenSUSE wiki
+<https://en.opensuse.org/openSUSE:Desktop_FAQ#How_to_choose_a_desktop_environment.3F>`__
 
 Step 5: System Configuration
 ----------------------------
@@ -578,12 +576,11 @@ Step 5: System Configuration
      locale -a
   
    Output must include that languages:
-     
-     C
-     C.UTF-8
-     en_US.utf8
-     POSIX
-
+    
+   * C
+   * C.UTF-8
+   * en_US.utf8
+   * POSIX
 
    Find yout locale from `locale -a` commands output then set it with following command.
 
