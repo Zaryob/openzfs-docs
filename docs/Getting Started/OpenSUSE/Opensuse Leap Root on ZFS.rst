@@ -1,6 +1,6 @@
 .. highlight:: sh
 
-OpenSUSE Leap Root on ZFS
+openSUSE Leap Root on ZFS
 =========================
 
 .. contents:: Table of Contents
@@ -21,7 +21,7 @@ Caution
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-- `64-bit OpenSUSE Leap Live CD w/ GUI (e.g. gnome iso)
+- `64-bit openSUSE Leap Live CD w/ GUI (e.g. gnome iso)
   <https://software.opensuse.org/distributions/leap>`__
 - `A 64-bit kernel is strongly encouraged.
   <https://github.com/zfsonlinux/zfs/wiki/FAQ#32-bit-vs-64-bit-systems>`__
@@ -42,7 +42,7 @@ Support
 If you need help, reach out to the community using the :ref:`mailing_lists` or IRC at
 `#zfsonlinux <irc://irc.freenode.net/#zfsonlinux>`__ on `freenode
 <https://freenode.net/>`__. If you have a bug report or feature request
-related to this HOWTO, please file a new issue and mention @Zaryob.
+related to this HOWTO, please file a new issue and mention `@Zaryob <https://github.com/Zaryob>`__.
 
 Contributing
 ~~~~~~~~~~~~
@@ -95,11 +95,11 @@ encrypted once per disk.
 Step 1: Prepare The Install Environment
 ---------------------------------------
 
-#. Boot the OpenSUSE Live CD. If prompted, login with the username
+#. Boot the openSUSE Live CD. If prompted, login with the username
    ``live`` and password ``live``. Connect your system to the Internet as
    appropriate (e.g. join your WiFi network). Open a terminal.
 
-#. Check your OpenSUSE Leap release::
+#. Check your openSUSE Leap release::
     
     lsb-release -d
     Description:    openSUSE Leap {$release}
@@ -516,7 +516,7 @@ Step 4. Install System
 
      zypper --root $root install -t pattern minimal_base
 
-For installing Desktop Environment into OpenSUSE, look at the `OpenSUSE wiki
+For installing Desktop Environment into openSUSE, look at the `openSUSE wiki
 <https://en.opensuse.org/openSUSE:Desktop_FAQ#How_to_choose_a_desktop_environment.3F>`__
 
 Step 5: System Configuration
@@ -593,7 +593,7 @@ Step 5: System Configuration
 
 #. Install ZFS in the chroot environment for the new system::
 
-     zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Leap_{$release}/  fileSystems # Adds  brassh/filesystems repository named as fileSystem
+     zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Leap_{$release}/  fileSystems # Adds brassh/filesystems repository named as fileSystem
      zypper ref   # Refresing all repositories
      zypper in zfs zfs-kmp-default
 
