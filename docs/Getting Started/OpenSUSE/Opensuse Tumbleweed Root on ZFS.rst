@@ -15,7 +15,12 @@ Caution
 - This HOWTO uses a whole physical disk.
 - Do not use these instructions for dual-booting.
 - Backup your data. Any existing data will be lost.
-- This is not a official HOWTO page. This is the way how I got it.
+- This is not an openSUSE official HOWTO page. This document will be updated if Root on ZFS support of 
+  openSUSE is added in the future.
+  Also, openSUSE's default system installer Yast2 does not support zfs. The method of setting up system 
+  with zypper without Yast2 used in this page is based on openSUSE installation methods written by the 
+  experience of the people in the community.
+  For more information about this, please look at the external links.
 
 
 System Requirements
@@ -102,15 +107,15 @@ Step 1: Prepare The Install Environment
 
 #. Setup and update the repositories::
 
-     sudo zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/ fileSystems
-     sudo zypper ref
+     sudo zypper addrepo http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/ fileSystems
+     sudo zypper refresh  # Refresh all repositories
 
 #. Optional: Install and start the OpenSSH server in the Live CD environment:
 
    If you have a second system, using SSH to access the target system can be
    convenient::
 
-     sudo zypper in openssh-server
+     sudo zypper install openssh-server
      sudo systemctl restart sshd.service
 
    **Hint:** You can find your IP address with
@@ -123,10 +128,9 @@ Step 1: Prepare The Install Environment
 
 #. Install ZFS in the Live CD environment::
 
-     sudo zypper in zfs zfs-kmp-default
-     zypper in gdisk dkms
+     zypper install zfs zfs-kmp-default
+     zypper install gdisk dkms
      modprobe zfs
-
 
 Step 2: Disk Formatting
 -----------------------
@@ -151,7 +155,7 @@ Step 2: Disk Formatting
 
    If the disk was previously used in an MD array::
 
-     zypper in mdadm
+     zypper install mdadm
 
      # See if one or more MD arrays are active:
      cat /proc/mdstat
@@ -290,7 +294,7 @@ Step 2: Disk Formatting
 
    - LUKS::
 
-       zypper in cryptsetup
+       zypper install cryptsetup
        cryptsetup luksFormat -c aes-xts-plain64 -s 512 -h sha256 ${DISK}-part4
        cryptsetup luksOpen ${DISK}-part4 luks1
        zpool create \
@@ -497,20 +501,56 @@ Step 4. Install System
 
 #. Add repositories into chrooting directory::
      
-     zypper --root /mnt ar http://download.opensuse.org/tumbleweed/repo/non-oss/
-     zypper --root /mnt ar http://download.opensuse.org/tumbleweed/repo/oss/
+     zypper --root /mnt ar http://download.opensuse.org/tumbleweed/repo/non-oss/ non-oss
+     zypper --root /mnt ar http://download.opensuse.org/tumbleweed/repo/oss/ oss
 
 #. Generate repository indexes::
 
-     zypper --root $root refresh
+     zypper --root /mnt refresh
+     
+     
+   You will get fingerprint exception, click a to say always trust and continue.::
+   
+     New repository or package signing key received:
 
-#. Install openSUSE Tumbleweed minimal_base::
+     Repository:       oss
+     Key Name:         openSUSE Project Signing Key <opensuse@opensuse.org>
+     Key Fingerprint:  22C07BA5 34178CD0 2EFE22AA B88B2FD4 3DBDC284
+     Key Created:      Mon May  5 11:37:40 2014
+     Key Expires:      Thu May  2 11:37:40 2024
+     Rpm Name:         gpg-pubkey-3dbdc284-53674dd4
 
-     zypper --root $root install -t pattern minimal_base
+     Do you want to reject the key, trust temporarily, or trust always? [r/t/a/?] (r): 
+
+  
+#. Install openSUSE Tumbleweed with zypper:
+
+    If you install `base` pattern, zypper will install `busybox-grep` which is masks default kernel package.
+    Thats why I recommend you to install `enhanced_base` pattern, if you're new in openSUSE. But in `enhanced_base`, bloats 
+    can annoy you, while you want to use it openSUSE on server. So, you need to select 
 
 
+    a. Install base packages of openSUSE Tumbleweed with zypper (Recommended for server)::
 
-For installing Desktop Environment into openSUSE, look at the `openSUSE wiki
+        zypper --root /mnt install -t pattern base
+
+
+    b. Install enhanced base of openSUSE Tumbleweed with zypper (Recommended for desktop)::
+
+        zypper --root /mnt install -t pattern enhanced_base
+        
+     
+#. Install openSUSE zypper package system into chroot::
+
+     zypper --root /mnt install zypper
+
+#. Recommended: Install openSUSE yast2 system into chroot::
+
+   It will make easier to configure network and other configurations for beginners.
+   
+     zypper --root /mnt install yast2
+
+To install a desktop environment, see the `openSUSE wiki
 <https://en.opensuse.org/openSUSE:Desktop_FAQ#How_to_choose_a_desktop_environment.3F>`__
 
 Step 5: System Configuration
@@ -532,23 +572,12 @@ Step 5: System Configuration
 
    **Hint:** Use ``nano`` if you find ``vi`` confusing.
 
-#. Configure the network interface:
+#. Copy network information::
 
-   Find the interface name::
+     cp /etc/resolv.conf /mnt/etc 
 
-     ip addr show
-
-   Adjust ``NAME`` below to match your interface name::
-
-     vi /mnt/etc/network/interfaces.d/NAME
-
-   .. code-block:: text
-
-     auto NAME
-     iface NAME inet dhcp
-
-   Customize this file if the system is not a DHCP client.
-
+   You will reconfigure network with yast2.
+   
 #. Bind the virtual filesystems from the LiveCD environment to the new
    system and ``chroot`` into it::
 
@@ -562,7 +591,7 @@ Step 5: System Configuration
 #. Configure a basic system environment::
 
      ln -s /proc/self/mounts /etc/mtab
-     zypper ref
+     zypper refresh
 
    Even if you prefer a non-English system language, always ensure that
    ``en_US.UTF-8`` is available::
@@ -581,21 +610,28 @@ Step 5: System Configuration
      localectl set-locale LANG=en_US.UTF-8
 
 
+#. Optional: Reinstallation for stability::
+
+   After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
+
+      zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
+
+
 #. Install kernel::
 
-     zypper in kernel-default kernel-firmware
+     zypper install kernel-default kernel-firmware
 
+   .. note:: If you installed `base` pattern, you need to deinstall busybox-grep to install `kernel-default` package.
 
 #. Install ZFS in the chroot environment for the new system::
 
-     zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/  fileSystems # Adds  brassh/filesystems repository named as fileSystem
-     zypper ref   # Refresing all repositories
-     zypper in zfs zfs-kmp-default
-
+     zypper addrepo http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/  fileSystems 
+     zypper refresh   # Refresh all repositories
+     zypper install zfs zfs-kmp-default
 
 #. For LUKS installs only, setup ``/etc/crypttab``::
 
-     zypper in cryptsetup
+     zypper install cryptsetup
 
      echo luks1 UUID=$(blkid -s UUID -o value ${DISK}-part4) none \
          luks,discard,initramfs > /etc/crypttab
@@ -618,7 +654,7 @@ Step 5: System Configuration
 
    - Install GRUB for UEFI booting::
 
-        zypper in grub2 dosfstools os-prober
+        zypper install grub2 dosfstools os-prober
         mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
         mkdir /boot/efi
         echo PARTUUID=$(blkid -s PARTUUID -o value ${DISK}-part2) \
@@ -638,7 +674,7 @@ Step 5: System Configuration
 
      zypper remove os-prober
 
-   This avoids error messages from `update-bootloader`.  `os-prober` is only
+   This avoids error messages from `update-bootloader`. `os-prober` is only
    necessary in dual-boot configurations.
 
 #. Set a root password::
@@ -685,14 +721,33 @@ Step 5: System Configuration
      cp /usr/share/systemd/tmp.mount /etc/systemd/system/
      systemctl enable tmp.mount
 
-Step 6: GRUB Installation
--------------------------
-
+     
+Step 6: Kernel Installation
+---------------------------
 
 #. Add zfs module into dracut::
 
      echo 'zfs'>> /etc/modules-load.d/zfs.conf
 
+
+#. Refresh kernel files::
+
+    kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)
+
+#. Refresh the initrd files::
+
+     mkinitrd
+   
+   **Note:** After some installations, LUKS partition cannot seen by dracut,
+   this will print “Failure occured during following action:
+   configuring encrypted DM device X VOLUME_CRYPTSETUP_FAILED“. For fix this 
+   issue you need to check cryptsetup installation. `See for more information <https://forums.opensuse.org/showthread.php/528938-installation-with-LUKS-cryptsetup-installer-gives-error-code-3034?p=2850404#post2850404>`__
+   **Note:** Although we add the zfs config to the system module into `/etc/modules.d`, if it is not seen by dracut, we have to add it to dracut by force.
+   `dracut --kver $(uname -r) --force --add-drivers "zfs"`
+   
+   
+Step 7: Grub2 Installation
+--------------------------  
 
 #. Verify that the ZFS boot filesystem is recognized::
 
@@ -707,19 +762,7 @@ Step 6: GRUB Installation
 
    then go back to `grub2-probe` step.
 
-#. Refresh kernel files::
-
-    kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)
-
-#. Refresh the initrd files::
-
-     mkinitrd
-
-   **Note:** When using LUKS, this will print “WARNING could not determine
-   root device from /etc/fstab”. This is because `cryptsetup does not
-   support ZFS
-   <https://bugs.launchpad.net/ubuntu/+source/cryptsetup/+bug/1612906>`__.
-
+   
 #. Workaround GRUB's missing zpool-features support::
 
      vi /etc/default/grub
@@ -740,6 +783,7 @@ Step 6: GRUB Installation
      update-bootloader
 
    **Note:** Ignore errors from ``osprober``, if present.
+   **Note:** If you have had trouble with the grub2 installation, I suggest you use systemd-boot.
 
 #. Install the boot loader:
 
@@ -750,6 +794,46 @@ Step 6: GRUB Installation
 
       It is not necessary to specify the disk here. If you are creating a
       mirror or raidz topology, the additional disks will be handled later.
+
+Step 8: Systemd-Boot Installation
+---------------------------------
+
+**Warning:** This will break your Yast2 Bootloader Configuration. Make sure that you
+are not able to fix the problem you are having with grub2. I decided to write this 
+part because sometimes grub2 doesn't see the rpool pool in some cases.
+
+#. Install systemd-boot::
+    
+    bootctl install
+
+#. Configure bootloader configuration::
+
+    tee -a /boot/efi/loader/loader.conf << EOF
+    default openSUSE_Tumbleweed.conf
+    timeout 5
+    console-mode auto
+    EOF 
+    
+#. Write Entries::
+
+    tee -a /boot/efi/loader/entries/openSUSE_Tumbleweed.conf << EOF
+    title   openSUSE Tumbleweed
+    linux   /EFI/openSUSE/vmlinuz
+    initrd  /EFI/openSUSE/initrd
+    options root=zfs=rpool/ROOT/suse boot=zfs
+    EOF
+
+#. Copy files into EFI::
+
+    mkdir /boot/efi/EFI/openSUSE
+    cp /boot/{vmlinuz,initrd} /boot/efi/EFI/openSUSE
+
+#. Update systemd-boot variables::
+    
+    bootctl update
+      
+Step 9: Filesystem Configuration
+--------------------------------
 
 #. Fix filesystem mount ordering:
 
@@ -786,12 +870,12 @@ Step 6: GRUB Installation
 
      sed -Ei "s|/mnt/?|/|" /etc/zfs/zfs-list.cache/*
 
-Step 7: First Boot
+Step 10: First Boot
 ------------------
 
 #. Optional: Install SSH::
 
-     zypper in --yes openssh-server
+     zypper install --yes openssh-server
 
      vi /etc/ssh/sshd_config
      # Set: PermitRootLogin yes
@@ -851,7 +935,7 @@ Step 7: First Boot
 
        mount /boot/efi
 
-Step 8: Optional: Configure Swap
+Step 11: Optional: Configure Swap
 ---------------------------------
 
 **Caution**: On systems with extremely high memory pressure, using a
@@ -896,7 +980,7 @@ available. There is `a bug report upstream
 
      swapon -av
 
-Step 9: Final Cleanup
+Step 12: Final Cleanup
 ---------------------
 
 #. Wait for the system to boot normally. Login using the account you
@@ -932,7 +1016,7 @@ Step 9: Final Cleanup
      # Comment out GRUB_TERMINAL=console
      # Save and quit.
 
-     sudo update-grub
+     sudo update-bootloader
 
    **Note:** Ignore errors from ``osprober``, if present.
 
@@ -958,7 +1042,7 @@ Go through `Step 1: Prepare The Install Environment
 
 For LUKS, first unlock the disk(s)::
 
-  zypper in cryptsetup
+  zypper install cryptsetup
   cryptsetup luksOpen /dev/disk/by-id/scsi-SATA_disk1-part4 luks1
   # Repeat for additional disks, if this is a mirror or raidz topology.
 
@@ -968,7 +1052,7 @@ Mount everything correctly::
   zpool import -N -R /mnt rpool
   zpool import -N -R /mnt bpool
   zfs load-key -a
-  zfs mount rpool/ROOT/debian
+  zfs mount rpool/ROOT/suse
   zfs mount -a
 
 If needed, you can chroot into your installed environment::
@@ -1027,7 +1111,7 @@ Set a unique serial number on each virtual disk using libvirt or qemu
 To be able to use UEFI in guests (instead of only BIOS booting), run
 this on the host::
 
-  sudo zypper in ovmf
+  sudo zypper install ovmf
   sudo vi /etc/libvirt/qemu.conf
 
 Uncomment these lines:
@@ -1050,3 +1134,9 @@ VMware
 
 - Set ``disk.EnableUUID = "TRUE"`` in the vmx file or vsphere configuration.
   Doing this ensures that ``/dev/disk`` aliases are created in the guest.
+
+  
+External Links
+~~~~~~~~~~~~~~
+* [OpenZFS on openSUSE](https://en.opensuse.org/OpenZFS)
+* [ZenLinux Blog - How to Setup an openSUSE chroot](https://blog.zenlinux.com/2011/02/how-to-setup-an-opensuse-chroot/comment-page-1/)
