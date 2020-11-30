@@ -1,7 +1,7 @@
 .. highlight:: sh
 
-openSUSE Tumbleweed Root on ZFS
-===============================
+openSUSE Leap Root on ZFS
+=========================
 
 .. contents:: Table of Contents
   :local:
@@ -17,7 +17,7 @@ Caution
 - Backup your data. Any existing data will be lost.
 - This is not an openSUSE official HOWTO page. This document will be updated if Root on ZFS support of 
   openSUSE is added in the future.
-  Also, openSUSE's default system installer Yast2 does not support zfs. The method of setting up system 
+  Also, `openSUSE's default system installer Yast2 does not support zfs <https://forums.opensuse.org/showthread.php/510071-HOWTO-Install-ZFSonLinux-on-OpenSuse>`__. The method of setting up system 
   with zypper without Yast2 used in this page is based on openSUSE installation methods written by the 
   experience of the people in the community.
   For more information about this, please look at the external links.
@@ -26,8 +26,9 @@ Caution
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-- `64-bit openSUSE Tumbleweed Live CD w/ GUI (e.g. gnome iso)
-  <https://software.opensuse.org/distributions/tumbleweed>`__
+ 
+- `64-bit openSUSE Leap Live CD w/ GUI (e.g. gnome iso)
+  <https://software.opensuse.org/distributions/leap>`__
 - `A 64-bit kernel is strongly encouraged.
   <https://github.com/zfsonlinux/zfs/wiki/FAQ#32-bit-vs-64-bit-systems>`__
 - Installing on a drive which presents 4 KiB logical sectors (a “4Kn” drive)
@@ -104,11 +105,19 @@ Step 1: Prepare The Install Environment
    ``live`` and password ``live``. Connect your system to the Internet as
    appropriate (e.g. join your WiFi network). Open a terminal.
 
+   
 
+#. Check your openSUSE Leap release::
+    
+    lsb-release -d
+    Description:    openSUSE Leap {$release}
+
+..note: This {$release} variable will affect your installation. Please make sure you have written your release data correctly in the repo url to avoid package dependency problem.
+ 
 #. Setup and update the repositories::
-
-     sudo zypper addrepo http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/ fileSystems
-     sudo zypper refresh  # Refresh all repositories
+ 
+     sudo zypper ar http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Leap_{$release}/ fileSystems
+     sudo zypper refresh   # Refresh all repositories
 
 #. Optional: Install and start the OpenSSH server in the Live CD environment:
 
@@ -501,8 +510,10 @@ Step 4. Install System
 
 #. Add repositories into chrooting directory::
      
-     zypper --root /mnt ar http://download.opensuse.org/tumbleweed/repo/non-oss/ non-oss
-     zypper --root /mnt ar http://download.opensuse.org/tumbleweed/repo/oss/ oss
+     zypper --root /mnt ar http://download.opensuse.org/distribution/leap/{$release}/repo/non-os  non-os
+     zypper --root /mnt ar http://download.opensuse.org/distribution/leap/{$release}/repo/os os
+     zypper --root /mnt ar http://download.opensuse.org/update/leap/{$release}/oss  update-oss
+     zypper --root /mnt ar http://download.opensuse.org/update/leap/{$release}/non-oss update-nonos
 
 #. Generate repository indexes::
 
@@ -523,19 +534,19 @@ Step 4. Install System
      Do you want to reject the key, trust temporarily, or trust always? [r/t/a/?] (r): 
 
   
-#. Install openSUSE Tumbleweed with zypper:
+#. Install openSUSE Leap with zypper:
 
     If you install `base` pattern, zypper will install `busybox-grep` which is masks default kernel package.
     Thats why I recommend you to install `enhanced_base` pattern, if you're new in openSUSE. But in `enhanced_base`, bloats 
     can annoy you, while you want to use it openSUSE on server. So, you need to select 
 
 
-    a. Install base packages of openSUSE Tumbleweed with zypper (Recommended for server)::
+    a. Install base packages of openSUSE Leap with zypper (Recommended for server)::
 
         zypper --root /mnt install -t pattern base
 
 
-    b. Install enhanced base of openSUSE Tumbleweed with zypper (Recommended for desktop)::
+    b. Install enhanced base of openSUSE Leap with zypper (Recommended for desktop)::
 
         zypper --root /mnt install -t pattern enhanced_base
         
@@ -625,7 +636,7 @@ Step 5: System Configuration
 
 #. Install ZFS in the chroot environment for the new system::
 
-     zypper addrepo http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/  fileSystems 
+     zypper addrepo http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Leap_{$release}/  fileSystems 
      zypper refresh   # Refresh all repositories
      zypper install zfs zfs-kmp-default
 
@@ -809,15 +820,15 @@ part because sometimes grub2 doesn't see the rpool pool in some cases.
 #. Configure bootloader configuration::
 
     tee -a /boot/efi/loader/loader.conf << EOF
-    default openSUSE_Tumbleweed.conf
+    default openSUSE_Leap.conf
     timeout 5
     console-mode auto
     EOF 
     
 #. Write Entries::
 
-    tee -a /boot/efi/loader/entries/openSUSE_Tumbleweed.conf << EOF
-    title   openSUSE Tumbleweed
+    tee -a /boot/efi/loader/entries/openSUSE_Leap.conf << EOF
+    title   openSUSE Leap
     linux   /EFI/openSUSE/vmlinuz
     initrd  /EFI/openSUSE/initrd
     options root=zfs=rpool/ROOT/suse boot=zfs
@@ -871,7 +882,7 @@ Step 9: Filesystem Configuration
      sed -Ei "s|/mnt/?|/|" /etc/zfs/zfs-list.cache/*
 
 Step 10: First Boot
-------------------
+-------------------
 
 #. Optional: Install SSH::
 
@@ -981,7 +992,7 @@ available. There is `a bug report upstream
      swapon -av
 
 Step 12: Final Cleanup
----------------------
+----------------------
 
 #. Wait for the system to boot normally. Login using the account you
    created. Ensure the system (including networking) works normally.
