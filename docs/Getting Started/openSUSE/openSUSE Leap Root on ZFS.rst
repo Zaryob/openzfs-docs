@@ -663,6 +663,13 @@ Step 5: System Configuration
 
    Choose one of the following options:
 
+   - Install GRUB for legacy (BIOS) booting::
+
+       zypper install grub2-efi
+
+     Select (using the space bar) all of the disks (not partitions) in your
+     pool.
+
    - Install GRUB for UEFI booting::
 
         zypper install grub2 dosfstools os-prober
@@ -798,6 +805,15 @@ Step 7: Grub2 Installation
 
 #. Install the boot loader:
 
+   #. For legacy (BIOS) booting, install GRUB to the MBR::
+
+        grub2-install $DISK
+
+   Note that you are installing GRUB to the whole disk, not a partition.
+
+   If you are creating a mirror or raidz topology, repeat the ``grub-install``
+   command for each disk in the pool.
+
    #. For UEFI booting, install GRUB to the ESP::
 
         grub2-install --target=x86_64-efi --efi-directory=/boot/efi \
@@ -932,6 +948,20 @@ Step 10: First Boot
 
    If you installed to multiple disks, install GRUB on the additional
    disks.
+
+   - For legacy (BIOS) booting::
+     Check to be sure we using efi mode:
+
+       efibootmgr -v
+     
+     This must return a message contains `legacy_boot`
+
+     Then reconfigure grub:
+
+        grub-install $DISK
+
+     Hit enter until you get to the device selection screen.
+     Select (using the space bar) all of the disks (not partitions) in your pool.
 
    - For UEFI booting::
 
