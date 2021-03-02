@@ -71,7 +71,7 @@ Contributing
     sensible-browser _build/html/index.html
 
 #. ``git commit --signoff`` to a branch, ``git push``, and create a pull
-   request. Mention @rlaager.
+   request.
 
 Encryption
 ~~~~~~~~~~
@@ -536,20 +536,20 @@ Step 4. Install System
   
 #. Install openSUSE Leap with zypper:
 
-    If you install `base` pattern, zypper will install `busybox-grep` which is masks default kernel package.
-    Thats why I recommend you to install `enhanced_base` pattern, if you're new in openSUSE. But in `enhanced_base`, bloats 
-    can annoy you, while you want to use it openSUSE on server. So, you need to select 
+   If you install `base` pattern, zypper will install `busybox-grep` which is masks default kernel package.
+   Thats why I recommend you to install `enhanced_base` pattern, if you're new in openSUSE. But in `enhanced_base`, bloats 
+   can annoy you, while you want to use it openSUSE on server. So, you need to select 
+
+   a. Install base packages of openSUSE Leap with zypper (Recommended for server)::
+
+       zypper --root /mnt install -t pattern base
 
 
-    a. Install base packages of openSUSE Leap with zypper (Recommended for server)::
+   b. Install enhanced base of openSUSE Leap with zypper (Recommended for desktop)::
 
-        zypper --root /mnt install -t pattern base
+       zypper --root /mnt install -t pattern enhanced_base   
 
-
-    b. Install enhanced base of openSUSE Leap with zypper (Recommended for desktop)::
-
-        zypper --root /mnt install -t pattern enhanced_base
-        
+   
      
 #. Install openSUSE zypper package system into chroot::
 
@@ -557,9 +557,11 @@ Step 4. Install System
 
 #. Recommended: Install openSUSE yast2 system into chroot::
 
-   It will make easier to configure network and other configurations for beginners.
-   
+    It will make easier to configure network and other configurations for beginners.
+
+
      zypper --root /mnt install yast2
+
 
 To install a desktop environment, see the `openSUSE wiki
 <https://en.opensuse.org/openSUSE:Desktop_FAQ#How_to_choose_a_desktop_environment.3F>`__
@@ -576,9 +578,12 @@ Step 5: System Configuration
 
    .. code-block:: text
 
-     Add a line:
+   Add a line:
+   
      127.0.1.1       HOSTNAME
-     or if the system has a real name in DNS:
+   
+   or if the system has a real name in DNS:
+   
      127.0.1.1       FQDN HOSTNAME
 
    **Hint:** Use ``nano`` if you find ``vi`` confusing.
@@ -623,9 +628,9 @@ Step 5: System Configuration
 
 #. Optional: Reinstallation for stability::
 
-   After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
+  After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
 
-      zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
+     zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
 
 
 #. Install kernel::
@@ -655,8 +660,8 @@ Step 5: System Configuration
 
 #. For LUKS installs only, fix cryptsetup naming for ZFS::
  
-    echo 'ENV{DM_NAME}!="", SYMLINK+="$env{DM_NAME}"
-    ENV{DM_NAME}!="", SYMLINK+="dm-name-$env{DM_NAME}"' >> /etc/udev/rules.d/99-local-crypt.rules
+     echo 'ENV{DM_NAME}!="", SYMLINK+="$env{DM_NAME}"
+     ENV{DM_NAME}!="", SYMLINK+="dm-name-$env{DM_NAME}"' >> /etc/udev/rules.d/99-local-crypt.rules
 
 
 #. Install GRUB
@@ -672,12 +677,12 @@ Step 5: System Configuration
 
    - Install GRUB for UEFI booting::
 
-        zypper install grub2 dosfstools os-prober
-        mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
-        mkdir /boot/efi
-        echo PARTUUID=$(blkid -s PARTUUID -o value ${DISK}-part2) \
-           /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
-        mount /boot/efi
+       zypper install grub2 dosfstools os-prober
+       mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
+       mkdir /boot/efi
+       echo PARTUUID=$(blkid -s PARTUUID -o value ${DISK}-part2) \
+          /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
+       mount /boot/efi
 
      **Notes:**
 
@@ -686,7 +691,7 @@ Step 5: System Configuration
         (given the partition size of 512 MiB) for FAT32. It also works fine on
         drives which present 512 B sectors.
      - For a mirror or raidz topology, this step only installs GRUB on the
-       first disk. The other disk(s) will be handled later.
+        first disk. The other disk(s) will be handled later.
 
 #. Optional: Remove os-prober::
 
@@ -750,7 +755,7 @@ Step 6: Kernel Installation
 
 #. Refresh kernel files::
 
-    kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)
+     kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)
 
 #. Refresh the initrd files::
 
@@ -831,33 +836,33 @@ part because sometimes grub2 doesn't see the rpool pool in some cases.
 
 #. Install systemd-boot::
     
-    bootctl install
+     bootctl install
 
 #. Configure bootloader configuration::
 
-    tee -a /boot/efi/loader/loader.conf << EOF
-    default openSUSE_Leap.conf
-    timeout 5
-    console-mode auto
-    EOF 
+     tee -a /boot/efi/loader/loader.conf << EOF
+     default openSUSE_Leap.conf
+     timeout 5
+     console-mode auto
+     EOF 
     
 #. Write Entries::
 
-    tee -a /boot/efi/loader/entries/openSUSE_Leap.conf << EOF
-    title   openSUSE Leap
-    linux   /EFI/openSUSE/vmlinuz
-    initrd  /EFI/openSUSE/initrd
-    options root=zfs=rpool/ROOT/suse boot=zfs
-    EOF
+     tee -a /boot/efi/loader/entries/openSUSE_Leap.conf << EOF
+     title   openSUSE Leap
+     linux   /EFI/openSUSE/vmlinuz
+     initrd  /EFI/openSUSE/initrd
+     options root=zfs=rpool/ROOT/suse boot=zfs
+     EOF
 
 #. Copy files into EFI::
 
-    mkdir /boot/efi/EFI/openSUSE
-    cp /boot/{vmlinuz,initrd} /boot/efi/EFI/openSUSE
+     mkdir /boot/efi/EFI/openSUSE
+     cp /boot/{vmlinuz,initrd} /boot/efi/EFI/openSUSE
 
 #. Update systemd-boot variables::
     
-    bootctl update
+     bootctl update
       
 Step 9: Filesystem Configuration
 --------------------------------
@@ -958,7 +963,7 @@ Step 10: First Boot
 
      Then reconfigure grub:
 
-        grub-install $DISK
+       grub-install $DISK
 
      Hit enter until you get to the device selection screen.
      Select (using the space bar) all of the disks (not partitions) in your pool.
