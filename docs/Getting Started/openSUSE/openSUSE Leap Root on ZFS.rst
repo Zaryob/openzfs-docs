@@ -105,8 +105,6 @@ Step 1: Prepare The Install Environment
    ``live`` and password ``live``. Connect your system to the Internet as
    appropriate (e.g. join your WiFi network). Open a terminal.
 
-   
-
 #. Check your openSUSE Leap release::
     
     lsb-release -d
@@ -130,6 +128,20 @@ Step 1: Prepare The Install Environment
    **Hint:** You can find your IP address with
    ``ip addr show scope global | grep inet``. Then, from your main machine,
    connect with ``ssh user@IP``.
+
+     
+     sudo apt install --yes openssh-server
+
+     sudo systemctl restart ssh
+
+   
+#. Disable automounting:
+
+   If the disk has been used before (with partitions at the same offsets),
+   previous filesystems (e.g. the ESP) will automount if not disabled::
+
+     gsettings set org.gnome.desktop.media-handling automount false
+
 
 #. Become root::
 
@@ -214,6 +226,7 @@ Step 2: Disk Formatting
 #. Create the boot pool::
 
      zpool create \
+         -o cachefile=/etc/zfs/zpool.cache \
          -o ashift=12 -d \
          -o feature@async_destroy=enabled \
          -o feature@bookmarks=enabled \
@@ -284,6 +297,7 @@ Step 2: Disk Formatting
    - Unencrypted::
 
        zpool create \
+           -o cachefile=/etc/zfs/zpool.cache \
            -o ashift=12 \
            -O acltype=posixacl -O canmount=off -O compression=lz4 \
            -O dnodesize=auto -O normalization=formD -O relatime=on \
@@ -293,6 +307,7 @@ Step 2: Disk Formatting
    - ZFS native encryption::
 
        zpool create \
+           -o cachefile=/etc/zfs/zpool.cache \
            -o ashift=12 \
            -O encryption=aes-256-gcm \
            -O keylocation=prompt -O keyformat=passphrase \
@@ -307,6 +322,7 @@ Step 2: Disk Formatting
        cryptsetup luksFormat -c aes-xts-plain64 -s 512 -h sha256 ${DISK}-part4
        cryptsetup luksOpen ${DISK}-part4 luks1
        zpool create \
+           -o cachefile=/etc/zfs/zpool.cache \
            -o ashift=12 \
            -O acltype=posixacl -O canmount=off -O compression=lz4 \
            -O dnodesize=auto -O normalization=formD -O relatime=on \
@@ -427,6 +443,7 @@ Step 3: System Installation
 
      zfs create                                 rpool/home
      zfs create -o mountpoint=/root             rpool/home/root
+     chmod 700 /mnt/root
      zfs create -o canmount=off                 rpool/var
      zfs create -o canmount=off                 rpool/var/lib
      zfs create                                 rpool/var/log
@@ -487,6 +504,14 @@ Step 3: System Installation
 
      zfs create -o com.sun:auto-snapshot=false  rpool/var/lib/nfs
 
+
+   Mount a tmpfs at /run::
+
+     mkdir /mnt/run
+     mount -t tmpfs tmpfs /mnt/run
+     mkdir /mnt/run/lock
+
+
    A tmpfs is recommended later, but if you want a separate dataset for
    ``/tmp``::
 
@@ -504,6 +529,11 @@ Step 3: System Installation
    to limit the maximum space used. Otherwise, you can use a tmpfs (RAM
    filesystem) later.
 
+
+#. Copy in zpool.cache::
+
+     mkdir /mnt/etc/zfs
+     cp /etc/zfs/zpool.cache /mnt/etc/zfs/
 
 Step 4. Install System
 ----------------------
@@ -602,6 +632,9 @@ Step 5: System Configuration
      mount --rbind /dev  /mnt/dev
      mount --rbind /proc /mnt/proc
      mount --rbind /sys  /mnt/sys
+     mount -t tmpfs tmpfs /mnt/run
+     mkdir /mnt/run/lock
+
      chroot /mnt /usr/bin/env DISK=$DISK bash --login
 
    **Note:** This is using ``--rbind``, not ``--bind``.
@@ -653,7 +686,7 @@ Step 5: System Configuration
 
      zypper install cryptsetup
 
-     echo luks1 UUID=$(blkid -s UUID -o value ${DISK}-part4) none \
+     echo luks1 /dev/disk/by-uuid/$(blkid -s UUID -o value ${DISK}-part4) none \
          luks,discard,initramfs > /etc/crypttab
 
    The use of ``initramfs`` is a work-around for `cryptsetup does not support
@@ -684,7 +717,7 @@ Step 5: System Configuration
        zypper install grub2 dosfstools os-prober
        mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
        mkdir /boot/efi
-       echo PARTUUID=$(blkid -s PARTUUID -o value ${DISK}-part2) \
+       echo /dev/disk/by-uuid/$(blkid -s PARTUUID -o value ${DISK}-part2) \
           /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
        mount /boot/efi
 
@@ -729,6 +762,9 @@ Step 5: System Configuration
          Type=oneshot
          RemainAfterExit=yes
          ExecStart=/sbin/zpool import -N -o cachefile=none bpool
+         # Work-around to preserve zpool cache:
+         ExecStartPre=-/bin/mv /etc/zfs/zpool.cache /etc/zfs/preboot_zpool.cache
+         ExecStartPost=-/bin/mv /etc/zfs/preboot_zpool.cache /etc/zfs/zpool.cache 
 
          [Install]
          WantedBy=zfs-import.target
@@ -896,6 +932,9 @@ Step 9: Filesystem Configuration
 
      zfs set canmount=on     bpool/BOOT/suse
      zfs set canmount=noauto rpool/ROOT/suse
+
+   If they are still empty, stop zed (as below), start zed (as above) and try
+   again.
 
    Stop ``zed``::
 
