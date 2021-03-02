@@ -57,7 +57,7 @@ Contributing
 
 #. Install the tools::
 
-    sudo apt install python3-pip
+    sudo zypper install python3-pip
     pip3 install -r docs/requirements.txt
     # Add ~/.local/bin to your $PATH, e.g. by adding this to ~/.bashrc:
     PATH=$HOME/.local/bin:$PATH
@@ -128,11 +128,6 @@ Step 1: Prepare The Install Environment
    **Hint:** You can find your IP address with
    ``ip addr show scope global | grep inet``. Then, from your main machine,
    connect with ``ssh user@IP``.
-
-     
-     sudo apt install --yes openssh-server
-
-     sudo systemctl restart ssh
 
    
 #. Disable automounting:
@@ -666,6 +661,8 @@ Step 5: System Configuration
 #. Optional: Reinstallation for stability::
 
    After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
+
+   .. code-block:: text
 
      zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
 
