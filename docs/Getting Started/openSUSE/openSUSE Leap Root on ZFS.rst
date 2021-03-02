@@ -549,18 +549,18 @@ Step 4. Install System
 
        zypper --root /mnt install -t pattern enhanced_base   
 
-   
-     
+
+
 #. Install openSUSE zypper package system into chroot::
 
      zypper --root /mnt install zypper
 
 #. Recommended: Install openSUSE yast2 system into chroot::
 
-    It will make easier to configure network and other configurations for beginners.
-
-
      zypper --root /mnt install yast2
+     
+  It will make easier to configure network and other configurations for beginners.
+
 
 
 To install a desktop environment, see the `openSUSE wiki
@@ -576,14 +576,16 @@ Step 5: System Configuration
      echo HOSTNAME > /mnt/etc/hostname
      vi /mnt/etc/hosts
 
+   Add a line:
+
    .. code-block:: text
 
-   Add a line:
-   
      127.0.1.1       HOSTNAME
    
    or if the system has a real name in DNS:
    
+   .. code-block:: text
+
      127.0.1.1       FQDN HOSTNAME
 
    **Hint:** Use ``nano`` if you find ``vi`` confusing.
@@ -623,12 +625,14 @@ Step 5: System Configuration
 
    Find yout locale from `locale -a` commands output then set it with following command.
 
+   .. code-block:: text
+
      localectl set-locale LANG=en_US.UTF-8
 
 
 #. Optional: Reinstallation for stability::
 
-  After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
+   After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
 
      zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
 
@@ -956,14 +960,18 @@ Step 10: First Boot
 
    - For legacy (BIOS) booting::
      Check to be sure we using efi mode:
-
-       efibootmgr -v
+     
+     .. code-block:: text
+     
+         efibootmgr -v
      
      This must return a message contains `legacy_boot`
 
      Then reconfigure grub:
+    
+     .. code-block:: text
 
-       grub-install $DISK
+         grub-install $DISK
 
      Hit enter until you get to the device selection screen.
      Select (using the space bar) all of the disks (not partitions) in your pool.
