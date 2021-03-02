@@ -715,7 +715,7 @@ Step 5: System Configuration
        mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
        mkdir /boot/efi
        echo /dev/disk/by-uuid/$(blkid -s PARTUUID -o value ${DISK}-part2) \
-          /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
+           /boot/efi vfat defaults 0 0 >> /etc/fstab
        mount /boot/efi
 
      **Notes:**

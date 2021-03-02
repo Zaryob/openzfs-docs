@@ -56,7 +56,7 @@ Contributing
 
 #. Install the tools::
 
-    sudo apt install python3-pip
+    sudo zypper install python3-pip
     pip3 install -r docs/requirements.txt
     # Add ~/.local/bin to your $PATH, e.g. by adding this to ~/.bashrc:
     PATH=$HOME/.local/bin:$PATH
@@ -70,7 +70,7 @@ Contributing
     sensible-browser _build/html/index.html
 
 #. ``git commit --signoff`` to a branch, ``git push``, and create a pull
-   request. Mention @rlaager.
+   request.
 
 Encryption
 ~~~~~~~~~~
@@ -104,7 +104,6 @@ Step 1: Prepare The Install Environment
    ``live`` and password ``live``. Connect your system to the Internet as
    appropriate (e.g. join your WiFi network). Open a terminal.
 
-
 #. Setup and update the repositories::
 
      sudo zypper addrepo http://download.opensuse.org/repositories/home:/brassh:/branches:/filesystems/openSUSE_Tumbleweed/ fileSystems
@@ -121,6 +120,15 @@ Step 1: Prepare The Install Environment
    **Hint:** You can find your IP address with
    ``ip addr show scope global | grep inet``. Then, from your main machine,
    connect with ``ssh user@IP``.
+
+   
+#. Disable automounting:
+
+   If the disk has been used before (with partitions at the same offsets),
+   previous filesystems (e.g. the ESP) will automount if not disabled::
+
+     gsettings set org.gnome.desktop.media-handling automount false
+
 
 #. Become root::
 
@@ -205,6 +213,7 @@ Step 2: Disk Formatting
 #. Create the boot pool::
 
      zpool create \
+         -o cachefile=/etc/zfs/zpool.cache \
          -o ashift=12 -d \
          -o feature@async_destroy=enabled \
          -o feature@bookmarks=enabled \
@@ -275,6 +284,7 @@ Step 2: Disk Formatting
    - Unencrypted::
 
        zpool create \
+           -o cachefile=/etc/zfs/zpool.cache \
            -o ashift=12 \
            -O acltype=posixacl -O canmount=off -O compression=lz4 \
            -O dnodesize=auto -O normalization=formD -O relatime=on \
@@ -284,6 +294,7 @@ Step 2: Disk Formatting
    - ZFS native encryption::
 
        zpool create \
+           -o cachefile=/etc/zfs/zpool.cache \
            -o ashift=12 \
            -O encryption=aes-256-gcm \
            -O keylocation=prompt -O keyformat=passphrase \
@@ -298,6 +309,7 @@ Step 2: Disk Formatting
        cryptsetup luksFormat -c aes-xts-plain64 -s 512 -h sha256 ${DISK}-part4
        cryptsetup luksOpen ${DISK}-part4 luks1
        zpool create \
+           -o cachefile=/etc/zfs/zpool.cache \
            -o ashift=12 \
            -O acltype=posixacl -O canmount=off -O compression=lz4 \
            -O dnodesize=auto -O normalization=formD -O relatime=on \
@@ -418,6 +430,7 @@ Step 3: System Installation
 
      zfs create                                 rpool/home
      zfs create -o mountpoint=/root             rpool/home/root
+     chmod 700 /mnt/root
      zfs create -o canmount=off                 rpool/var
      zfs create -o canmount=off                 rpool/var/lib
      zfs create                                 rpool/var/log
@@ -478,6 +491,14 @@ Step 3: System Installation
 
      zfs create -o com.sun:auto-snapshot=false  rpool/var/lib/nfs
 
+
+   Mount a tmpfs at /run::
+
+     mkdir /mnt/run
+     mount -t tmpfs tmpfs /mnt/run
+     mkdir /mnt/run/lock
+
+
    A tmpfs is recommended later, but if you want a separate dataset for
    ``/tmp``::
 
@@ -495,6 +516,11 @@ Step 3: System Installation
    to limit the maximum space used. Otherwise, you can use a tmpfs (RAM
    filesystem) later.
 
+
+#. Copy in zpool.cache::
+
+     mkdir /mnt/etc/zfs
+     cp /etc/zfs/zpool.cache /mnt/etc/zfs/
 
 Step 4. Install System
 ----------------------
@@ -525,30 +551,32 @@ Step 4. Install System
   
 #. Install openSUSE Tumbleweed with zypper:
 
-    If you install `base` pattern, zypper will install `busybox-grep` which is masks default kernel package.
-    Thats why I recommend you to install `enhanced_base` pattern, if you're new in openSUSE. But in `enhanced_base`, bloats 
-    can annoy you, while you want to use it openSUSE on server. So, you need to select 
+   If you install `base` pattern, zypper will install `busybox-grep` which is masks default kernel package.
+   Thats why I recommend you to install `enhanced_base` pattern, if you're new in openSUSE. But in `enhanced_base`, bloats 
+   can annoy you, while you want to use it openSUSE on server. So, you need to select 
+
+   a. Install base packages of openSUSE Tumbleweed with zypper (Recommended for server)::
+
+       zypper --root /mnt install -t pattern base
 
 
-    a. Install base packages of openSUSE Tumbleweed with zypper (Recommended for server)::
+   b. Install enhanced base of openSUSE Tumbleweed with zypper (Recommended for desktop)::
 
-        zypper --root /mnt install -t pattern base
+       zypper --root /mnt install -t pattern enhanced_base   
 
 
-    b. Install enhanced base of openSUSE Tumbleweed with zypper (Recommended for desktop)::
 
-        zypper --root /mnt install -t pattern enhanced_base
-        
-     
 #. Install openSUSE zypper package system into chroot::
 
      zypper --root /mnt install zypper
 
 #. Recommended: Install openSUSE yast2 system into chroot::
 
-   It will make easier to configure network and other configurations for beginners.
-   
      zypper --root /mnt install yast2
+     
+  It will make easier to configure network and other configurations for beginners.
+
+
 
 To install a desktop environment, see the `openSUSE wiki
 <https://en.opensuse.org/openSUSE:Desktop_FAQ#How_to_choose_a_desktop_environment.3F>`__
@@ -563,11 +591,16 @@ Step 5: System Configuration
      echo HOSTNAME > /mnt/etc/hostname
      vi /mnt/etc/hosts
 
+   Add a line:
+
    .. code-block:: text
 
-     Add a line:
      127.0.1.1       HOSTNAME
-     or if the system has a real name in DNS:
+   
+   or if the system has a real name in DNS:
+   
+   .. code-block:: text
+
      127.0.1.1       FQDN HOSTNAME
 
    **Hint:** Use ``nano`` if you find ``vi`` confusing.
@@ -584,6 +617,9 @@ Step 5: System Configuration
      mount --rbind /dev  /mnt/dev
      mount --rbind /proc /mnt/proc
      mount --rbind /sys  /mnt/sys
+     mount -t tmpfs tmpfs /mnt/run
+     mkdir /mnt/run/lock
+
      chroot /mnt /usr/bin/env DISK=$DISK bash --login
 
    **Note:** This is using ``--rbind``, not ``--bind``.
@@ -607,6 +643,8 @@ Step 5: System Configuration
 
    Find yout locale from `locale -a` commands output then set it with following command.
 
+   .. code-block:: text
+
      localectl set-locale LANG=en_US.UTF-8
 
 
@@ -614,7 +652,9 @@ Step 5: System Configuration
 
    After installation it may need. Some packages may have minor errors. For that, do this if you wish. Since there is no command like dpkg-reconfigure in openSUSE,  [zypper install -f stated as a alternative for it](https://lists.opensuse.org/opensuse-factory/2009-07/msg00188.html) but it will reinstall packages.
 
-      zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
+   .. code-block:: text
+
+     zypper install -f permissions-config iputils ca-certificates  ca-certificates-mozilla pam shadow dbus libutempter0 suse-module-tools util-linux
 
 
 #. Install kernel::
@@ -633,7 +673,7 @@ Step 5: System Configuration
 
      zypper install cryptsetup
 
-     echo luks1 UUID=$(blkid -s UUID -o value ${DISK}-part4) none \
+     echo luks1 /dev/disk/by-uuid/$(blkid -s UUID -o value ${DISK}-part4) none \
          luks,discard,initramfs > /etc/crypttab
 
    The use of ``initramfs`` is a work-around for `cryptsetup does not support
@@ -644,8 +684,8 @@ Step 5: System Configuration
 
 #. For LUKS installs only, fix cryptsetup naming for ZFS::
  
-    echo 'ENV{DM_NAME}!="", SYMLINK+="$env{DM_NAME}"
-    ENV{DM_NAME}!="", SYMLINK+="dm-name-$env{DM_NAME}"' >> /etc/udev/rules.d/99-local-crypt.rules
+     echo 'ENV{DM_NAME}!="", SYMLINK+="$env{DM_NAME}"
+     ENV{DM_NAME}!="", SYMLINK+="dm-name-$env{DM_NAME}"' >> /etc/udev/rules.d/99-local-crypt.rules
 
 
 #. Install GRUB
@@ -661,12 +701,12 @@ Step 5: System Configuration
 
    - Install GRUB for UEFI booting::
 
-        zypper install grub2 dosfstools os-prober
-        mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
-        mkdir /boot/efi
-        echo PARTUUID=$(blkid -s PARTUUID -o value ${DISK}-part2) \
-           /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
-        mount /boot/efi
+       zypper install grub2 dosfstools os-prober
+       mkdosfs -F 32 -s 1 -n EFI ${DISK}-part2
+       mkdir /boot/efi
+       echo /dev/disk/by-uuid/$(blkid -s PARTUUID -o value ${DISK}-part2) \
+          /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
+       mount /boot/efi
 
      **Notes:**
 
@@ -675,7 +715,7 @@ Step 5: System Configuration
         (given the partition size of 512 MiB) for FAT32. It also works fine on
         drives which present 512 B sectors.
      - For a mirror or raidz topology, this step only installs GRUB on the
-       first disk. The other disk(s) will be handled later.
+        first disk. The other disk(s) will be handled later.
 
 #. Optional: Remove os-prober::
 
@@ -709,6 +749,9 @@ Step 5: System Configuration
          Type=oneshot
          RemainAfterExit=yes
          ExecStart=/sbin/zpool import -N -o cachefile=none bpool
+         # Work-around to preserve zpool cache:
+         ExecStartPre=-/bin/mv /etc/zfs/zpool.cache /etc/zfs/preboot_zpool.cache
+         ExecStartPost=-/bin/mv /etc/zfs/preboot_zpool.cache /etc/zfs/zpool.cache 
 
          [Install]
          WantedBy=zfs-import.target
@@ -739,7 +782,7 @@ Step 6: Kernel Installation
 
 #. Refresh kernel files::
 
-    kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)
+     kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)
 
 #. Refresh the initrd files::
 
@@ -798,9 +841,10 @@ Step 7: Grub2 Installation
 
         grub2-install $DISK
 
-      Note that you are installing GRUB to the whole disk, not a partition.
-      If you are creating a mirror or raidz topology, repeat the ``grub-install``
-      command for each disk in the pool.
+   Note that you are installing GRUB to the whole disk, not a partition.
+
+   If you are creating a mirror or raidz topology, repeat the ``grub-install``
+   command for each disk in the pool.
 
    #. For UEFI booting, install GRUB to the ESP::
 
@@ -819,33 +863,33 @@ part because sometimes grub2 doesn't see the rpool pool in some cases.
 
 #. Install systemd-boot::
     
-    bootctl install
+     bootctl install
 
 #. Configure bootloader configuration::
 
-    tee -a /boot/efi/loader/loader.conf << EOF
-    default openSUSE_Tumbleweed.conf
-    timeout 5
-    console-mode auto
-    EOF 
+     tee -a /boot/efi/loader/loader.conf << EOF
+     default openSUSE_Tumbleweed.conf
+     timeout 5
+     console-mode auto
+     EOF 
     
 #. Write Entries::
 
-    tee -a /boot/efi/loader/entries/openSUSE_Tumbleweed.conf << EOF
-    title   openSUSE Tumbleweed
-    linux   /EFI/openSUSE/vmlinuz
-    initrd  /EFI/openSUSE/initrd
-    options root=zfs=rpool/ROOT/suse boot=zfs
-    EOF
+     tee -a /boot/efi/loader/entries/openSUSE_Tumbleweed.conf << EOF
+     title   openSUSE Tumbleweed
+     linux   /EFI/openSUSE/vmlinuz
+     initrd  /EFI/openSUSE/initrd
+     options root=zfs=rpool/ROOT/suse boot=zfs
+     EOF
 
 #. Copy files into EFI::
 
-    mkdir /boot/efi/EFI/openSUSE
-    cp /boot/{vmlinuz,initrd} /boot/efi/EFI/openSUSE
+     mkdir /boot/efi/EFI/openSUSE
+     cp /boot/{vmlinuz,initrd} /boot/efi/EFI/openSUSE
 
 #. Update systemd-boot variables::
     
-    bootctl update
+     bootctl update
       
 Step 9: Filesystem Configuration
 --------------------------------
@@ -875,6 +919,9 @@ Step 9: Filesystem Configuration
 
      zfs set canmount=on     bpool/BOOT/suse
      zfs set canmount=noauto rpool/ROOT/suse
+
+   If they are still empty, stop zed (as below), start zed (as above) and try
+   again.
 
    Stop ``zed``::
 
@@ -939,14 +986,18 @@ Step 10: First Boot
 
    - For legacy (BIOS) booting::
      Check to be sure we using efi mode:
-
-       efibootmgr -v
+     
+     .. code-block:: text
+     
+         efibootmgr -v
      
      This must return a message contains `legacy_boot`
 
      Then reconfigure grub:
+    
+     .. code-block:: text
 
-        grub-install $DISK
+         grub-install $DISK
 
      Hit enter until you get to the device selection screen.
      Select (using the space bar) all of the disks (not partitions) in your pool.
